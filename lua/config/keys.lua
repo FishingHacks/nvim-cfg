@@ -7,8 +7,13 @@ vim.keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" }
 
 vim.keymap.set("n", "<right>", function() vim.cmd.tabnext() end)
 vim.keymap.set("n", "<left>", function() vim.cmd.tabprev() end)
-vim.keymap.set("n", "<up>", function() vim.cmd.tabnew() end)
-vim.keymap.set("n", "<down>", function() vim.cmd.tabclose() end)
+
+vim.keymap.set("n", "<down>", function() pcall(vim.cmd.tabclose) end)
+vim.keymap.set("n", "<up>", function()
+  vim.cmd.tabnew()
+  vim.cmd("Oil")
+end)
+
 vim.keymap.set("n", "<C-d>", "<C-d>zz", { desc = "Go multiple lines up" })
 vim.keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Go multiple lines down" })
 
