@@ -8,6 +8,7 @@ return {
       topdelete = { text = "‾" },
       changedelete = { text = "~" },
     },
+    auto_attach = true,
     on_attach = function(bufnr)
       local gitsigns = require("gitsigns")
 
