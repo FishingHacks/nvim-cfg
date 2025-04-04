@@ -18,8 +18,6 @@ return {
         vim.keymap.set(mode, l, r, opts)
       end
 
-      print("haiii")
-
       -- Navigation
       map("n", "]c", function()
         if vim.wo.diff then
