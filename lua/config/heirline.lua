@@ -87,7 +87,10 @@ local mode = {
 }
 
 local file_name_block = {
-  init = function(self) self.filename = vim.api.nvim_buf_get_name(0) end,
+  init = function(self)
+    self.filename = vim.api.nvim_buf_get_name(0)
+    if vim.bo.buftype == "terminal" then self.filename = vim.api.nvim_buf_get_name(0):gsub(".*:", "") end
+  end,
 }
 
 local file_icon = {
@@ -95,12 +98,16 @@ local file_icon = {
     local filename = self.filename
     local extension = vim.fn.fnamemodify(filename, ":e")
     self.icon, self.icon_color = require("nvim-web-devicons").get_icon_color(filename, extension, { default = true })
+    if vim.bo.buftype == "terminal" then
+      self.icon = " "
+      self.icon_color = "white"
+    end
   end,
   provider = function(self) return self.icon and (self.icon .. " ") end,
   hl = function(self) return { fg = self.icon_color } end,
 }
 
-local filename = {
+local file_name = {
   provider = function(self)
     local filename = vim.fn.fnamemodify(self.filename, ":.")
     if filename == "" then return "[No Name]" end
@@ -113,12 +120,12 @@ local filename = {
 local fileflags = {
   {
     condition = function() return vim.bo.modified end,
-    provider = "[+]",
+    provider = " [+]",
     hl = { fg = "green" },
   },
   {
-    condition = function() return not vim.bo.modifiable or vim.bo.readonly end,
-    provider = "",
+    condition = function() return (not vim.bo.modifiable or vim.bo.readonly) and vim.bo.buftype ~= "terminal" end,
+    provider = " ",
     hl = { fg = "orange" },
   },
 }
@@ -130,7 +137,7 @@ local filename_mod = {
 }
 
 file_name_block =
-  utils.insert(file_name_block, file_icon, utils.insert(filename_mod, filename), fileflags, { provider = "%<" })
+  utils.insert(file_name_block, file_icon, utils.insert(filename_mod, file_name), fileflags, { provider = "%<" })
 
 local ruler = {
   -- %l = current line number
@@ -155,6 +162,11 @@ local diagnostics = {
     self.info = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.INFO })
   end,
   update = { "DiagnosticChanged", "BufEnter" },
+  on_click = {
+    callback = function() vim.diagnostic.setloclist({}) end,
+    name = "open_diagnostics",
+    minwid = 0,
+  },
   {
     provider = function(self)
       -- 0 is just another output, we can decide to print it or not!
@@ -190,13 +202,13 @@ local tabline_filename = {
     filename = filename == "" and "[No Name]" or vim.fn.fnamemodify(filename, ":.")
     return filename
   end,
-  hl = function(self) return { bold = self.is_active or self.is_visible, italic = true } end,
+  hl = function(self) return { bold = self.is_active or self.is_visible } end,
 }
 
 local tabline_fileflags = {
   {
     condition = function(self) return vim.api.nvim_get_option_value("modified", { buf = self.buffer }) end,
-    provider = "[+]",
+    provider = " [+]",
     hl = { fg = "green" },
   },
   {
@@ -206,11 +218,12 @@ local tabline_fileflags = {
     end,
     provider = function(self)
       if vim.api.nvim_get_option_value("buftype", { buf = self.buffer }) == "terminal" then
-        return "  "
+        return ""
       else
-        return ""
+        return "  "
       end
     end,
+    hl = { fg = "orange" },
   },
 }
 
@@ -219,6 +232,10 @@ local tabline_fileicon = {
     local filename = vim.api.nvim_buf_get_name(self.buffer)
     local extension = vim.fn.fnamemodify(filename, ":e")
     self.icon, self.icon_color = require("nvim-web-devicons").get_icon_color(filename, extension, { default = true })
+    if vim.bo[self.buffer].buftype == "terminal" then
+      self.icon = ""
+      self.icon_color = "white"
+    end
   end,
   provider = function(self) return self.icon and (self.icon .. " ") end,
   hl = function(self) return { fg = self.icon_color } end,
@@ -228,7 +245,7 @@ local tabline_filename_block = {
   init = function(self) self.buffer = vim.api.nvim_win_get_buf(vim.api.nvim_tabpage_get_win(self.tabpage)) end,
   hl = "TabLine",
   tabline_bufnr,
-  tabline_fileicon, -- turns out the version defined in #crash-course-part-ii-filename-and-friends can be reutilized as is here!
+  tabline_fileicon,
   tabline_filename,
   tabline_fileflags,
 }
@@ -240,17 +257,18 @@ local tabline_buffer_block = utils.surround(
 )
 
 local tabline = utils.make_tablist({ tabline_buffer_block })
+local statusline = {
+  mode,
+  space,
+  file_name_block,
+  align,
+  space,
+  diagnostics,
+  space,
+  ruler,
+}
 
 heirline.setup({
-  statusline = {
-    mode,
-    space,
-    file_name_block,
-    align,
-    space,
-    diagnostics,
-    space,
-    ruler,
-  },
+  statusline = statusline,
   tabline = { tabline },
 })

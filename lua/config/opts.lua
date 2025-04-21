@@ -8,6 +8,8 @@ vim.opt.tabstop = 4
 vim.opt.expandtab = true
 vim.opt.shiftwidth = 0
 
+vim.opt.shell = "fish"
+
 -- Set if a nerdfont is installed
 vim.g.have_nerd_font = true
 
