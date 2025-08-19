@@ -85,7 +85,6 @@ return {
           settings = {
             ["rust-analyzer"] = {
               check = { command = "clippy", extraArgs = { "--tests" } },
-              cargo = { allFeatures = true },
               rustfmt = { extraArgs = { "+nightly" } },
             },
           },
