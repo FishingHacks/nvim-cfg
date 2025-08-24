@@ -63,11 +63,9 @@ vim.lsp.config["rust_analyzer"] = {
   filetypes = { "rust" },
   root_markers = { ".git", "Cargo.toml" },
   settings = {
-    ["rust-analyzer"] = {
-      check = { command = "clippy", extraArgs = { "--tests" } },
-      -- cargo = { features = "all" },
-      rustfmt = { extraArgs = { "+nightly" } },
-    },
+    check = { command = "clippy", extraArgs = { "--tests" } },
+    -- cargo = { features = "all" },
+    rustfmt = { extraArgs = { "+nightly" } },
   },
 }
 
@@ -92,3 +90,31 @@ vim.lsp.config["cssls"] = {
 }
 
 vim.lsp.enable("cssls")
+
+vim.lsp.config["htmlls"] = {
+  cmd = { "vscode-html-language-server", "--stdio" },
+  filetypes = { "html" },
+  settings = {
+    ["htmlls"] = {},
+  },
+  init_options = {
+    configurationSection = { "html", "css", "javascript" },
+    embeddedLanguages = {
+      css = true,
+      javascript = true
+    },
+  },
+}
+
+vim.lsp.enable("htmlls")
+
+vim.lsp.config["luals"] = {
+  cmd = { "lua-language-server" },
+  filetypes = { "lua" },
+  root_markers = { ".luarc.json", ".luarc.jsonc", ".luacheckrc", ".stylua.toml", "stylua.toml", "selene.toml", "selene.yml", ".git" },
+  settings = {
+    ["luals"] = {},
+  },
+}
+
+vim.lsp.enable("luals")
