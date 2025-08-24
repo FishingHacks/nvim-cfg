@@ -1,6 +1,7 @@
 require("config.opts")
 require("config.keys")
 require("config.lazy")
+require("config.lsp")
 
 local parser_config = require("nvim-treesitter.parsers").get_parser_configs()
 parser_config.mira = {
