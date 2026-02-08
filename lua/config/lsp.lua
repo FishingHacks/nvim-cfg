@@ -63,9 +63,11 @@ vim.lsp.config["rust_analyzer"] = {
   filetypes = { "rust" },
   root_markers = { ".git", "Cargo.toml" },
   settings = {
-    check = { command = "clippy", extraArgs = { "--tests" } },
-    -- cargo = { features = "all" },
-    rustfmt = { extraArgs = { "+nightly" } },
+    ["rust-analyzer"] = {
+      check = { command = "clippy", extraArgs = { "--tests" } },
+      -- cargo = { features = "all" },
+      rustfmt = { extraArgs = { "+nightly" } },
+    }
   },
 }
 
@@ -118,3 +120,14 @@ vim.lsp.config["luals"] = {
 }
 
 vim.lsp.enable("luals")
+
+vim.lsp.config["clangd"] = {
+  cmd = { "clangd" },
+  filetypes = { "c" },
+  root_markers = { '.clangd', '.clang-tidy', '.clang-format', 'compile_commands.json', 'compile_flags.txt', 'configure.ac', '.git' },
+  settings = {
+    ["clangd"] = {},
+  },
+}
+
+vim.lsp.enable("clangd")
